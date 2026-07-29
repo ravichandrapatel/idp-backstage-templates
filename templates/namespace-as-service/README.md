@@ -5,7 +5,7 @@ Version **1.1.1** · Git tag `template-namespace-as-service-v1.1.1`
 ## Migration (1.1.0 → 1.1.1)
 
 - Sync is performed by the **spoke** Argo CD Agent (**autonomous**), not by hub push with `destination.name`.
-- Catalog `clusterName` must match the spoke secret annotation `naas_cluster_name` (and the `env/<env>/<clusterName>/` path segment).
+- Catalog `clusterName` must match the spoke secret **annotation** `naas_cluster_name` (and the `env/<env>/<clusterName>/` path segment). Enable NaaS with the **label** `enable_naas=true` on that secret (often `in-cluster`).
 - Hub no longer targets NaaS tenants via Argo `destination.name`. See [idp-gitops-bridge hub–spoke architecture](https://github.com/ravichandrapatel/idp-gitops-bridge/blob/main/docs/hub-spoke-architecture.md).
 
 ## 1. How form validation works
@@ -28,9 +28,9 @@ Backstage validates in layers:
 - On submit, name is taken as `${{ parameters.clusterEntity | parseEntityRef | name }}`.
 - That name must match:
   1. Git path `env/<env>/<clusterName>/<tenant>.yaml`
-  2. Spoke Argo CD cluster secret annotation `naas_cluster_name` (often on `in-cluster`)
+  2. Spoke Argo CD cluster secret **annotation** `naas_cluster_name` (often on `in-cluster`)
 
-Register a new cluster by adding a Resource under `catalog/` in this repo (see `catalog/cluster-labs.yaml`), and annotate the spoke secret accordingly.
+Register a new cluster by adding a Resource under `catalog/` in this repo (see `catalog/cluster-labs.yaml`). On the spoke secret set **label** `enable_naas=true` and **annotation** `naas_cluster_name=<clusterName>`.
 
 ### Chart version
 
