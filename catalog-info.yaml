@@ -2,7 +2,10 @@ apiVersion: backstage.io/v1alpha1
 kind: Location
 metadata:
   name: idp-backstage-templates
-  description: DevZero IDP Software Templates
+  description: DevZero IDP catalog entities, org model, and Software Templates
 spec:
   targets:
+    - ./catalog/entities.yaml
+    - ./catalog/org.yaml
+    - ./catalog/cluster-labs.yaml
     - ./templates/example-nodejs/template.yaml
