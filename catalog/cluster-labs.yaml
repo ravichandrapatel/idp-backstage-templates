@@ -1,14 +1,41 @@
 # FILE_NAME: cluster-labs.yaml
-# DESCRIPTION: Lab cluster Resource for Kubernetes + Kyverno Policy Reporter plugins
-# VERSION: 0.1.0
+# DESCRIPTION: Lab cluster Resource — selectable in NaaS EntityPicker (spec.type=kubernetes-cluster)
+# VERSION: 0.2.0
+# AUTHORS: ravichandrapatel
+#
+# metadata.name MUST equal the Argo CD cluster secret/name used as Application destination.name
+
 apiVersion: backstage.io/v1alpha1
 kind: Resource
 metadata:
   name: labs
-  description: kind-lab cluster
+  title: Labs (kind)
+  description: kind-lab cluster registered for Namespace-as-a-Service scaffolding
   annotations:
-    # Point at Policy Reporter API when installed (update host as needed)
+    # Used by operators; destination.name in ApplicationSet is metadata.name (labs)
+    argocd.argoproj.io/cluster-name: labs
     kyverno.io/endpoint: http://policy-reporter.kyverno.svc.cluster.local:8080/
+  tags:
+    - kubernetes
+    - naas
 spec:
   type: kubernetes-cluster
-  owner: guests
+  owner: group:default/platform
+  system: namespace-platform
+---
+# Example second cluster — add more Resources here to grow the form dropdown
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: example-cluster
+  title: Example cluster
+  description: Placeholder cluster folder under env/nonprod/example-cluster
+  annotations:
+    argocd.argoproj.io/cluster-name: example-cluster
+  tags:
+    - kubernetes
+    - naas
+spec:
+  type: kubernetes-cluster
+  owner: group:default/platform
+  system: namespace-platform

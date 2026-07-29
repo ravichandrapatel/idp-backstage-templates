@@ -40,3 +40,13 @@ catalog:
 | [namespace-as-service](https://github.com/ravichandrapatel/namespace-as-service) | Helm chart (OCI) |
 | [idp-argocd-apps](https://github.com/ravichandrapatel/idp-argocd-apps) | Argo CD ApplicationSet + `env/cluster/namespace.yaml` |
 | [backstage](https://github.com/ravichandrapatel/backstage) | Developer portal |
+
+## Namespace-as-a-Service template
+
+See [`templates/namespace-as-service/README.md`](templates/namespace-as-service/README.md) for:
+
+- **Validation** (EntityPicker clusters, JSON Schema, enums)
+- **Chart version → Argo OCI `targetRevision`**
+- **Tag-based template releases** (`template-namespace-as-service-vX.Y.Z`)
+
+Production portal should pin the template Location to a **git tag**, not `main`.
