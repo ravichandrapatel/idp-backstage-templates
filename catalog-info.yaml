@@ -1,3 +1,8 @@
+# FILE_NAME: catalog-info.yaml
+# DESCRIPTION: Root Location for IDP Backstage catalog + all Software Templates
+# VERSION: 1.1.0
+# AUTHORS: ravichandrapatel
+
 apiVersion: backstage.io/v1alpha1
 kind: Location
 metadata:
@@ -9,3 +14,4 @@ spec:
     - ./catalog/org.yaml
     - ./catalog/cluster-labs.yaml
     - ./templates/example-nodejs/template.yaml
+    - ./templates/namespace-as-service/template.yaml

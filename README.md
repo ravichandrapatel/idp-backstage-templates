@@ -1,47 +1,42 @@
 # DevZero IDP — Backstage Catalog & Templates
 
-Catalog entities, org model, and Software Templates for the [DevZero Backstage](https://github.com/ravichandrapatel/backstage) developer portal.
+**All** Software Templates for the IDP portal live in this repository.
 
 ## Layout
 
 ```text
 catalog/
-  entities.yaml       # System / Component / API examples
-  org.yaml            # Users & Groups
-  cluster-labs.yaml   # Cluster Resource
+  entities.yaml
+  org.yaml
+  cluster-labs.yaml
 templates/
-  example-nodejs/     # Software Template + scaffold content
-catalog-info.yaml     # Location aggregating the above
+  example-nodejs/
+  namespace-as-service/    # NaaS → pushes env/<env>/<cluster>/<tenant>.yaml to idp-argocd-apps
+catalog-info.yaml
 ```
 
-## Register in Backstage
+## Templates
 
-Prefer registering the root Location:
+| Template | What it does |
+| --- | --- |
+| `example-nodejs` | Sample Node service → new GitHub repo |
+| `namespace-as-service` | Creates a NaaS tenant Application file and opens a PR to [`idp-argocd-apps`](https://github.com/ravichandrapatel/idp-argocd-apps) at `env/<env>/<clusterName>/<tenant>.yaml` |
+
+## Register in Backstage
 
 ```yaml
 catalog:
   locations:
     - type: url
       target: https://github.com/ravichandrapatel/idp-backstage-templates/blob/main/catalog-info.yaml
+      rules:
+        - allow: [Component, System, API, Resource, Location, Template, User, Group]
 ```
 
-Or register each file:
+## Related repos
 
-```yaml
-catalog:
-  locations:
-    - type: url
-      target: https://github.com/ravichandrapatel/idp-backstage-templates/blob/main/catalog/entities.yaml
-    - type: url
-      target: https://github.com/ravichandrapatel/idp-backstage-templates/blob/main/catalog/org.yaml
-      rules:
-        - allow: [User, Group]
-    - type: url
-      target: https://github.com/ravichandrapatel/idp-backstage-templates/blob/main/catalog/cluster-labs.yaml
-      rules:
-        - allow: [Resource]
-    - type: url
-      target: https://github.com/ravichandrapatel/idp-backstage-templates/blob/main/templates/example-nodejs/template.yaml
-      rules:
-        - allow: [Template]
-```
+| Repo | Role |
+| --- | --- |
+| [namespace-as-service](https://github.com/ravichandrapatel/namespace-as-service) | Helm chart (OCI) |
+| [idp-argocd-apps](https://github.com/ravichandrapatel/idp-argocd-apps) | Argo CD ApplicationSet + `env/cluster/namespace.yaml` |
+| [backstage](https://github.com/ravichandrapatel/backstage) | Developer portal |
