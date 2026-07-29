@@ -1,6 +1,6 @@
 # FILE_NAME: template.yaml
 # DESCRIPTION: Backstage template — create NaaS tenant Application under env/cluster/tenant.yaml
-# VERSION: 1.1.0
+# VERSION: 1.1.1
 # AUTHORS: ravichandrapatel
 
 apiVersion: scaffolder.backstage.io/v1beta3
@@ -21,8 +21,8 @@ metadata:
   annotations:
     backstage.io/source-template: namespace-as-service
     # Pin portal locations to git tag template-namespace-as-service-vX.Y.Z for releases
-    ravichandrapatel.com/template-version: "1.1.0"
-    ravichandrapatel.com/template-git-tag: template-namespace-as-service-v1.1.0
+    ravichandrapatel.com/template-version: "1.1.1"
+    ravichandrapatel.com/template-git-tag: template-namespace-as-service-v1.1.1
 spec:
   owner: group:default/platform
   type: resource
@@ -61,7 +61,7 @@ spec:
           type: string
           description: >
             Must be a catalog Resource with spec.type=kubernetes-cluster.
-            metadata.name must match the Argo CD cluster name (destination.name).
+            metadata.name must match the spoke Git path segment / naas_cluster_name annotation on the spoke in-cluster secret (hub no longer uses destination.name for NaaS).
           ui:field: EntityPicker
           ui:options:
             allowArbitraryValues: false

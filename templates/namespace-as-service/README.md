@@ -1,6 +1,12 @@
 # Namespace as a Service — Software Template
 
-Version **1.1.0** · Git tag `template-namespace-as-service-v1.1.0`
+Version **1.1.1** · Git tag `template-namespace-as-service-v1.1.1`
+
+## Migration (1.1.0 → 1.1.1)
+
+- Sync is performed by the **spoke** Argo CD Agent (**autonomous**), not by hub push with `destination.name`.
+- Catalog `clusterName` must match the spoke secret annotation `naas_cluster_name` (and the `env/<env>/<clusterName>/` path segment).
+- Hub no longer targets NaaS tenants via Argo `destination.name`. See [idp-gitops-bridge hub–spoke architecture](https://github.com/ravichandrapatel/idp-gitops-bridge/blob/main/docs/hub-spoke-architecture.md).
 
 ## 1. How form validation works
 
@@ -11,7 +17,7 @@ Backstage validates in layers:
 | **JSON Schema** | `required`, `pattern`, `enum`, `minItems` | tenant DNS label, env enum, chartVersion pattern |
 | **UI fields** | Pickers refuse free text | `EntityPicker` for cluster, `OwnerPicker` for owner |
 | **Catalog filter** | Only matching entities | `Resource` + `spec.type: kubernetes-cluster` |
-| **Scaffolder filters** | Transform after submit | `parseEntityRef \| name` → Argo `clusterName` |
+| **Scaffolder filters** | Transform after submit | `parseEntityRef \| name` → Git path `clusterName` |
 
 ### Cluster name
 
@@ -20,9 +26,11 @@ Backstage validates in layers:
 - User can only choose catalog **Resource** entities of type `kubernetes-cluster`.
 - Typed-in unknown cluster names are rejected by the UI.
 - On submit, name is taken as `${{ parameters.clusterEntity | parseEntityRef | name }}`.
-- That name must match an Argo CD cluster (`destination.name`).
+- That name must match:
+  1. Git path `env/<env>/<clusterName>/<tenant>.yaml`
+  2. Spoke Argo CD cluster secret annotation `naas_cluster_name` (often on `in-cluster`)
 
-Register a new cluster by adding a Resource under `catalog/` in this repo (see `catalog/cluster-labs.yaml`).
+Register a new cluster by adding a Resource under `catalog/` in this repo (see `catalog/cluster-labs.yaml`), and annotate the spoke secret accordingly.
 
 ### Chart version
 
@@ -37,16 +45,18 @@ Flow:
 
 1. Form field `chartVersion` (e.g. `1.0.0`) is written into  
    `env/<env>/<cluster>/<tenant>.yaml` as `chartVersion: "1.0.0"`.
-2. ApplicationSet `idp-argocd-apps/appsets/namespace-as-service.yaml` reads that file and sets:
+2. Spoke-local ApplicationSet `idp-argocd-apps/appsets/namespace-as-service.yaml` reads that file and sets:
 
    ```yaml
    source:
      repoURL: ghcr.io/ravichandrapatel/charts
      chart: namespace-as-service
      targetRevision: "{{.chartVersion}}"   # ← OCI chart tag
+   destination:
+     server: https://kubernetes.default.svc
    ```
 
-3. Argo CD pulls  
+3. Spoke Argo CD pulls  
    `oci://ghcr.io/ravichandrapatel/charts/namespace-as-service:<chartVersion>`.
 
 So Argo does **not** invent the version — it uses the value from the GitOps YAML
@@ -59,8 +69,8 @@ Treat this Software Template like a product version:
 
 ```bash
 # after merging template changes to main
-git tag -a template-namespace-as-service-v1.1.0 -m "NaaS template 1.1.0"
-git push origin template-namespace-as-service-v1.1.0
+git tag -a template-namespace-as-service-v1.1.1 -m "NaaS template 1.1.1"
+git push origin template-namespace-as-service-v1.1.1
 ```
 
 Pin Backstage to that tag (immutable) instead of `main`:
@@ -69,7 +79,7 @@ Pin Backstage to that tag (immutable) instead of `main`:
 catalog:
   locations:
     - type: url
-      target: https://github.com/ravichandrapatel/idp-backstage-templates/blob/template-namespace-as-service-v1.1.0/templates/namespace-as-service/template.yaml
+      target: https://github.com/ravichandrapatel/idp-backstage-templates/blob/template-namespace-as-service-v1.1.1/templates/namespace-as-service/template.yaml
       rules:
         - allow: [Template]
     # Still load catalog entities (clusters) from main or a catalog tag
